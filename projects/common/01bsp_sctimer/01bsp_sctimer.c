@@ -21,7 +21,16 @@ The sctimer is periodic, of period SCTIMER_PERIOD ticks. Each time it elapses:
 
 //=========================== defines =========================================
 
-#define SCTIMER_PERIOD     32768 // @32kHz = 1s
+#define SCTIMER_PERIOD     0.5*32768 // @32kHz = 1s
+#define LED1_INTERVAL      0.5*32768   
+#define LED2_INTERVAL      32768     
+#define LED3_INTERVAL      1.5*32768     
+#define LED4_INTERVAL      2*32768    
+
+uint32_t led1_counter = 0;
+uint32_t led2_counter = 0;
+uint32_t led3_counter = 0;
+uint32_t led4_counter = 0;
 
 //=========================== variables =======================================
 
@@ -57,15 +66,37 @@ int mote_main(void) {
 
 void cb_compare(void) {
    
+   led1_counter += SCTIMER_PERIOD;
+   led2_counter += SCTIMER_PERIOD;
+   led3_counter += SCTIMER_PERIOD;
+   led4_counter += SCTIMER_PERIOD;
+
    // toggle pin
    debugpins_frame_toggle();
    
-   // toggle error led
-   leds_error_toggle();
+   // toggle led
+   if (led1_counter >= LED1_INTERVAL) {
+      leds_error_toggle();  
+      led1_counter = 0;  // 重置计数器
+   }
    
+   if (led2_counter >= LED2_INTERVAL) {
+      leds_sync_toggle();  
+      led2_counter = 0;  // 重置计数器
+   }
+   if (led3_counter >= LED3_INTERVAL) {
+      leds_radio_toggle();  
+      led3_counter = 0;  // 重置计数器
+   }
+   if (led4_counter >= LED4_INTERVAL) {
+      leds_debug_toggle();
+      led4_counter = 0;  // 重置计数器
+   }
+
    // increment counter
    app_vars.num_compare++;
-   
+  
+
    // schedule again
    sctimer_setCompare(sctimer_readCounter()+SCTIMER_PERIOD);
 }
