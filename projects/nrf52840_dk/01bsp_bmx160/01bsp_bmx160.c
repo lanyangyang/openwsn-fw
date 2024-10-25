@@ -89,7 +89,7 @@ int mote_main(void) {
     // 0x8: 100Hz
     // 0xc: 1600Hz
     // 0xd: 3200Hz
-    bmx160_gyr_config(0x08);//origin 0x0d
+    bmx160_gyr_config(0x0d);
     // 0x8: 100Hz
     // 0xb: 800Hz
     bmx160_mag_config(0x0b);
