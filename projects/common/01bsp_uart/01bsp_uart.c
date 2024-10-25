@@ -26,8 +26,10 @@ TeraTerm):
 //=========================== defines =========================================
 
 #define SCTIMER_PERIOD     0xffff // 0xffff@32kHz = 2s
-uint8_t stringToSend[]       = "Hello, World!\r\n";
-
+#define MAX_MESSAGE_LENGTH 64 // buff size for receive data
+uint8_t re_message[MAX_MESSAGE_LENGTH]; // msg buffer
+uint8_t buffer_ready = 0; // msg status
+uint8_t idx = 0; // msg insert idx
 //=========================== variables =======================================
 
 typedef struct {
@@ -73,10 +75,19 @@ int mote_main(void) {
       while (app_vars.uartSendNow==0);
       app_vars.uartSendNow = 0;
       
+      // send msg if enter is pressed
+      if (buffer_ready == 1) {
+          app_vars.uart_lastTxByteIndex = 0;
+          app_vars.uartDone = 0;
+          uart_writeByte(re_message[app_vars.uart_lastTxByteIndex]);
+          buffer_ready = 0; 
+          
+      }
+
       // send string over UART
       app_vars.uartDone              = 0;
       app_vars.uart_lastTxByteIndex  = 0;
-      uart_writeByte(stringToSend[app_vars.uart_lastTxByteIndex]);
+      
       while(app_vars.uartDone==0);
    }
 }
@@ -94,24 +105,37 @@ void cb_compare(void) {
 
 void cb_uartTxDone(void) {
    app_vars.uart_lastTxByteIndex++;
-   if (app_vars.uart_lastTxByteIndex<sizeof(stringToSend)) {
-      uart_writeByte(stringToSend[app_vars.uart_lastTxByteIndex]);
+   if (app_vars.uart_lastTxByteIndex < idx)  {
+      uart_writeByte(re_message[app_vars.uart_lastTxByteIndex]);
    } else {
       app_vars.uartDone = 1;
    }
 }
 
 uint8_t cb_uartRxCb(void) {
-   uint8_t byte;
-   
+   uint8_t byte; 
+
    // toggle LED
    leds_error_toggle();
    
    // read received byte
    byte = uart_readByte();
-   
+
+   // check the buffer size
+   if (re_message < MAX_MESSAGE_LENGTH - 1) {
+       re_message[idx++] = byte;  
+       if (byte == '\n') {
+           re_message[idx] = '\0';  
+           buffer_ready = 1;  
+           idx = 0;  
+       }
+       
+   } else {
+       
+       idx = 0;
+   }
+
    // echo that byte over serial
    uart_writeByte(byte);
-   
    return 0;
 }

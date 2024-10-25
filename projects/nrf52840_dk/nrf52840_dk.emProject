@@ -3,10 +3,14 @@
   <configuration
     Name="Debug"
     c_preprocessor_definitions="DEBUG; DEBUG_NRF"
+    gcc_debugging_level="Level 3"
+    gcc_omit_frame_pointer="Yes"
     gcc_optimization_level="None" />
   <configuration
     Name="Release"
     c_preprocessor_definitions="NDEBUG"
+    gcc_debugging_level="Level 2"
+    gcc_omit_frame_pointer="Yes"
     gcc_optimization_level="Optimize For Size"
     link_time_optimization="No" />
   <project Name="01bsp_leds">
@@ -326,64 +330,7 @@
       filter=""
       path="../../bsp/chips/bmx160"
       recurse="Yes" />
-  </project>
-  <project Name="01bsp_bmx160">
-    <configuration
-      LIBRARY_IO_TYPE="None"
-      Name="Common"
-      arm_architecture="v7EM"
-      arm_core_type="Cortex-M4"
-      arm_endian="Little"
-      arm_fp_abi="Hard"
-      arm_fpu_type="FPv4-SP-D16"
-      arm_linker_heap_size="8192"
-      arm_linker_process_stack_size="0"
-      arm_linker_stack_size="8192"
-      arm_linker_treat_warnings_as_errors="No"
-      arm_simulator_memory_simulation_parameter="RWX 00000000,00100000,FFFFFFFF;RWX 20000000,00010000,CDCDCDCD"
-      arm_target_device_name="nRF52840_xxAA"
-      arm_target_interface_type="SWD"
-      c_preprocessor_definitions="NRF52840_XXAA;NRF52840_DK"
-      c_user_include_directories="../../bsp/boards;../../bsp/boards/nrf52840_dk;../../bsp/boards/nrf52840_dk/sdk;../../bsp/chips/bmx160;../../inc"
-      debug_register_definition_file="../../bsp/boards/nrf52840-dk/sdk/nrf52840.svd"
-      debug_start_from_entry_point_symbol="No"
-      debug_target_connection="J-Link"
-      gcc_debugging_level="Level 3"
-      gcc_entry_point="Reset_Handler"
-      linker_output_format="hex"
-      linker_printf_fmt_level="long"
-      linker_printf_width_precision_supported="Yes"
-      linker_scanf_fmt_level="long"
-      linker_section_placement_file="flash_placement.xml"
-      linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x100000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x40000;FLASH_START=0x0;FLASH_SIZE=0x100000;RAM_START=0x20000000;RAM_SIZE=0x40000"
-      linker_section_placements_segments="FLASH1 RX 0x0 0x100000;RAM1 RWX 0x20000000 0x40000"
-      macros=""
-      project_directory=""
-      project_type="Executable" />
-    <folder
-      Name="application"
-      exclude=""
-      filter="*.c"
-      path="01bsp_bmx160"
-      recurse="Yes" />
-    <folder
-      Name="inc"
-      exclude=""
-      filter="*.h"
-      path="../../inc"
-      recurse="Yes" />
-    <folder
-      Name="bsp"
-      exclude="system_nrf52.c"
-      filter="*.s;*.c;*.h"
-      path="../../bsp/boards/nrf52840_dk"
-      recurse="Yes" />
-    <folder
-      Name="chips"
-      exclude=""
-      filter=""
-      path="../../bsp/chips/bmx160"
-      recurse="Yes" />
+    <file file_name="bmx160.c" />
   </project>
   <project Name="01bsp_radio">
     <configuration
@@ -714,6 +661,127 @@
       exclude=""
       filter="*.h;*.c"
       path="../../openweb"
+      recurse="Yes" />
+  </project>
+  <project Name="01bsp_bmp388">
+    <configuration
+      LIBRARY_IO_TYPE="None"
+      Name="Common"
+      arm_architecture="v7EM"
+      arm_core_type="Cortex-M4"
+      arm_endian="Little"
+      arm_fp_abi="Hard"
+      arm_fpu_type="FPv4-SP-D16"
+      arm_linker_heap_size="8192"
+      arm_linker_process_stack_size="0"
+      arm_linker_stack_size="8192"
+      arm_linker_treat_warnings_as_errors="No"
+      arm_simulator_memory_simulation_parameter="RWX 00000000,00100000,FFFFFFFF;RWX 20000000,00010000,CDCDCDCD"
+      arm_target_device_name="nRF52840_xxAA"
+      arm_target_interface_type="SWD"
+      c_preprocessor_definitions="NRF52840_XXAA;NRF52840_DK"
+      c_user_include_directories="../../bsp/boards;../../bsp/boards/nrf52840_dk;../../bsp/boards/nrf52840_dk/sdk;../../inc;../../bsp/chips/bmp388"
+      debug_register_definition_file="../../bsp/boards/nrf52840-dk/sdk/nrf52840.svd"
+      debug_start_from_entry_point_symbol="No"
+      debug_target_connection="J-Link"
+      gcc_debugging_level="Level 3"
+      gcc_entry_point="Reset_Handler"
+      linker_output_format="hex"
+      linker_printf_fmt_level="long"
+      linker_printf_width_precision_supported="Yes"
+      linker_scanf_fmt_level="long"
+      linker_section_placement_file="flash_placement.xml"
+      linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x100000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x40000;FLASH_START=0x0;FLASH_SIZE=0x100000;RAM_START=0x20000000;RAM_SIZE=0x40000"
+      linker_section_placements_segments="FLASH1 RX 0x0 0x100000;RAM1 RWX 0x20000000 0x40000"
+      macros=""
+      project_directory=""
+      project_type="Executable" />
+    <folder Name="application">
+      <file file_name="01bsp_bmp388/01bsp_bmp388.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
+      <file file_name="01bsp_bmp388/01bsp_388.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+    </folder>
+    <folder Name="chips">
+      <file file_name="01bsp_bmx160/bmp388.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
+      <file file_name="01bsp_bmx160/bmp388.h">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
+      <file file_name="../../bsp/chips/bmp388/b388.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="b388.h">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+    </folder>
+    <folder Name="inc">
+      <file file_name="af.h" />
+      <file file_name="check_config.h" />
+      <file file_name="config.h" />
+      <file file_name="opendefs.h" />
+    </folder>
+    <folder
+      Name="bsp"
+      exclude="system_nrf52.c"
+      filter="*.s;*.c;*.h"
+      path="../../bsp/boards/nrf52840_dk"
+      recurse="Yes" />
+  </project>
+  <project Name="01bsp_bmx160">
+    <configuration
+      LIBRARY_IO_TYPE="None"
+      Name="Common"
+      arm_architecture="v7EM"
+      arm_core_type="Cortex-M4"
+      arm_endian="Little"
+      arm_fp_abi="Hard"
+      arm_fpu_type="FPv4-SP-D16"
+      arm_linker_heap_size="8192"
+      arm_linker_process_stack_size="0"
+      arm_linker_stack_size="8192"
+      arm_linker_treat_warnings_as_errors="No"
+      arm_simulator_memory_simulation_parameter="RWX 00000000,00100000,FFFFFFFF;RWX 20000000,00010000,CDCDCDCD"
+      arm_target_device_name="nRF52840_xxAA"
+      arm_target_interface_type="SWD"
+      c_preprocessor_definitions="NRF52840_XXAA;NRF52840_DK"
+      c_user_include_directories="../../bsp/boards;../../bsp/boards/nrf52840_dk;../../bsp/boards/nrf52840_dk/sdk;../../bsp/chips/bmx160;../../inc"
+      debug_register_definition_file="../../bsp/boards/nrf52840-dk/sdk/nrf52840.svd"
+      debug_start_from_entry_point_symbol="No"
+      debug_target_connection="J-Link"
+      gcc_debugging_level="Level 3"
+      gcc_entry_point="Reset_Handler"
+      linker_output_format="hex"
+      linker_printf_fmt_level="long"
+      linker_printf_width_precision_supported="Yes"
+      linker_scanf_fmt_level="long"
+      linker_section_placement_file="flash_placement.xml"
+      linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x100000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x40000;FLASH_START=0x0;FLASH_SIZE=0x100000;RAM_START=0x20000000;RAM_SIZE=0x40000"
+      linker_section_placements_segments="FLASH1 RX 0x0 0x100000;RAM1 RWX 0x20000000 0x40000"
+      macros=""
+      project_directory=""
+      project_type="Executable" />
+    <folder Name="application">
+      <file file_name="01bsp_bmx160/01bsp_bmx160.c" />
+    </folder>
+    <folder Name="chips">
+      <file file_name="bmx160.h" />
+    </folder>
+    <folder Name="inc">
+      <file file_name="af.h" />
+      <file file_name="check_config.h" />
+      <file file_name="config.h" />
+      <file file_name="opendefs.h" />
+    </folder>
+    <configuration Name="Debug" debug_start_from_entry_point_symbol="No" />
+    <folder
+      Name="bsp"
+      exclude="system_nrf52.c"
+      filter="*.s;*.c;*.h"
+      path="../../bsp/boards/nrf52840_dk"
       recurse="Yes" />
   </project>
 </solution>
