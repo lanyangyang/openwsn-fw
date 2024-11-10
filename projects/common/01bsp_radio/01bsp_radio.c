@@ -24,15 +24,16 @@ end of frame event), it will turn on its error LED.
 #include "uart.h"
 
 //=========================== defines =========================================
-
+//#define LENGTH_CRC      8
 #define LENGTH_PACKET   125+LENGTH_CRC  ///< maximum length is 127 bytes
 #define LEN_PKT_TO_SEND 20+LENGTH_CRC
-#define CHANNEL         11            ///< 11=2.405GHz
+#define CHANNEL         3             ///< 11=2.405GHz
 #define TIMER_PERIOD    (0xffff>>4)    ///< 0xffff = 2s@32kHz
 #define ID              0x99           ///< byte sent in the packets
 
-uint8_t stringToSend[]  = "+002 Ptest.24.00.12.-010\n";
-
+uint8_t stringToSend[64]  = "+002 Ptest.24.00.12.-010\n";
+//uint8_t stringToSend[]  = "test\n";
+uint8_t sequence_number = 0;
 //=========================== variables =======================================
 
 enum {
@@ -50,9 +51,6 @@ typedef struct {
     uint8_t              num_startFrame;
     uint8_t              num_endFrame;
     uint8_t              num_timer;
-    
-    uint8_t              num_rx_startFrame;
-    uint8_t              num_rx_endFrame;
 } app_dbg_t;
 
 app_dbg_t app_dbg;
@@ -210,9 +208,13 @@ int mote_main(void) {
                         stringToSend[i++] = ' ';
 
                         stringToSend[i++] = 'P';
+                        // Translate seq num
+                        stringToSend[i++] = '0' + (app_vars.packet[0] / 100);      
+                        stringToSend[i++] = '0' + ((app_vars.packet[0] / 10)%10); 
+                        stringToSend[i++] = '0' + (app_vars.packet[0] % 10);        
                         memcpy(&stringToSend[i],&app_vars.packet[0],14);
                         i += 14;
-
+ 
                         sign = (app_vars.rxpk_rssi & 0x80) >> 7;
                         if (sign){
                             read = 0xff - (uint8_t)(app_vars.rxpk_rssi) + 1;
@@ -228,6 +230,13 @@ int mote_main(void) {
                         stringToSend[i++] = '0'+read/100;
                         stringToSend[i++] = '0'+read/10;
                         stringToSend[i++] = '0'+read%10;
+                        // ADD crc
+                        stringToSend[i++] = '-';
+                        stringToSend[i++] = '1';
+                        // Packer len
+                        stringToSend[i++] = '-';   
+                        stringToSend[i++] = '0' + ((app_vars.packet_len / 10)%10); 
+                        stringToSend[i++] = '0' + (app_vars.packet_len % 10);  
 
                         stringToSend[sizeof(stringToSend)-2] = '\r';
                         stringToSend[sizeof(stringToSend)-1] = '\n';
@@ -269,12 +278,17 @@ int mote_main(void) {
 
                     // prepare packet
                     app_vars.packet_len = sizeof(app_vars.packet);
-                    i = 0;
-                    app_vars.packet[i++] = 't';
-                    app_vars.packet[i++] = 'e';
-                    app_vars.packet[i++] = 's';
-                    app_vars.packet[i++] = 't';
-                    app_vars.packet[i++] = CHANNEL;
+                    app_vars.packet[0] = sequence_number++;
+                    
+                    if (sequence_number > 255) {
+                          sequence_number = 0; // Reset sequence number after 255
+                      }
+                    i = 1;
+                    //app_vars.packet[i++] = 't';
+                    //app_vars.packet[i++] = 'e';
+                    //app_vars.packet[i++] = 's';
+                    //app_vars.packet[i++] = 't';
+                    //app_vars.packet[i++] = CHANNEL;
                     while (i<app_vars.packet_len) {
                         app_vars.packet[i++] = ID;
                     }
@@ -302,10 +316,6 @@ void cb_startFrame(PORT_TIMER_WIDTH timestamp) {
 
     // update debug stats
     app_dbg.num_startFrame++;
-
-    if (app_vars.state == APP_STATE_RX) {
-        app_dbg.num_rx_startFrame++;
-    }
 }
 
 void cb_endFrame(PORT_TIMER_WIDTH timestamp) {
@@ -314,10 +324,6 @@ void cb_endFrame(PORT_TIMER_WIDTH timestamp) {
 
     // update debug stats
     app_dbg.num_endFrame++;
-
-    if (app_vars.state == APP_STATE_RX) {
-        app_dbg.num_rx_endFrame++;
-    }
 }
 
 void cb_timer(void) {
