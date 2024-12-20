@@ -350,7 +350,7 @@
  *
  */
 #ifndef IEEE802154E_SINGLE_CHANNEL
-#define IEEE802154E_SINGLE_CHANNEL      0
+#define IEEE802154E_SINGLE_CHANNEL      26
 #endif
 
 /**
@@ -381,7 +381,7 @@
  *
  */
 #ifndef PANID_DEFINED
-#define PANID_DEFINED   (0xcafe)
+#define PANID_DEFINED   (0xaafe)
 #endif
 
 // ======================== Board configuration ========================
